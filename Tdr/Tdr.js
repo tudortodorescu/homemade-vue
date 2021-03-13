@@ -24,6 +24,7 @@ export default class Tdr {
         traverseHtmlElements( this.appElement, element => {
             handleInterpolation( this, element ) 
             handleEvendBindings( this, element ) 
+            handleAttributeBindings( this, element ) 
         })
         
         this.appElement.__tdr__ = this
@@ -81,14 +82,29 @@ function handleInterpolation( vm, element ) {
   
 function handleEvendBindings( vm, element ) {
     const clickEventMethod = element.getAttribute( '@click' )
-    if ( !clickEventMethod ) return
+    if ( clickEventMethod ) {
+        element.addEventListener( 'click', event => {
+            const methodToCall = vm.$methods[ clickEventMethod ].bind( vm )
+            methodToCall( event )
+            
+            element.removeAttribute( '@click' )
+        })
+    }
 
-    element.addEventListener( 'click', event => {
-        const methodToCall = vm.$methods[ clickEventMethod ].bind( vm )
-        methodToCall( event )
-        
-        element.removeAttribute( '@click' )
-    })
+    const inputEventMethod = element.getAttribute( '@input' )
+    if ( inputEventMethod ) {
+        element.addEventListener( 'input', event => {
+            const methodToCall = vm.$methods[ inputEventMethod ].bind( vm )
+            methodToCall( event )
+            
+            element.removeAttribute( '@input' )
+        })
+    }
+}
+
+function handleAttributeBindings( vm, element ) {
+    const valueAttribute = element.getAttribute( ':value' )
+    element.value = vm.data[ valueAttribute ]
 }
 
 //////////////

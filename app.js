@@ -11,33 +11,47 @@ new Tdr({
     ">
       <h1>{{ message }}</h1>
       <section>
+        <input 
+          :value="name" 
+          @input="changeName"
+        />
         <a href="">{{ link }}</a>
-        <button @click="changeToRandomMessage">a button</button>
+        <button @click="changeToRandomMessage">randomize</button>
       </section>
-      <p>{{ message }}</p>
+      <p>
+        <strong>Message: </strong>
+        <span>{{ message }}</span>
+      </p>
+      <p>
+        <strong>Name: </strong>
+        <span>{{ name }}</span>
+      </p>
     </div>
   `,
   data() {
     return {
       message: 'hello',
-      link: 'google.com'
+      link: 'google.com',
+      name: 'Tudor'
     }
   },
   methods: {
-    changeToRandomMessage( event ) {
-      this.$data.message = this.$methods.generateUid()
+    changeName( event ) {
+      this.$data.name = event.target.value
     },
-    generateUid(
-      length = 4,
-      chars = '0123456789abcdefghijklmnopqrstuvwxyz'
-    ) {
-        let str = '';
-        for (let i = length; i > 0; --i) {
-            str += chars[ Math.floor(Math.random() * chars.length) ];
-        }
+    changeToRandomMessage( event ) {
+      const randomString = this.$methods.randomString()
+      this.$data.message = randomString || '- empty -'
+    },
+    randomString() {
+      const from = this.randomNumber()   
+      const to = Math.abs( from - this.randomNumber() )   
       
-        return str;
-    }
+      return Math.random().toString( from ).substring( to )
+    },
+    randomNumber() {
+      return Math.floor((Math.random() * 36) + 2);
+    },
   }
 })
 
