@@ -8,9 +8,10 @@ export default class Tdr {
     }) {
         this.data = data()
         this.template = template
+        this.$methods = {}
 
         for ( const method in methods ) {
-            this[ method ] = methods[ method ]
+            this.$methods[ method ] = methods[ method ]
         }
 
         this.elementRefs = {}
@@ -82,8 +83,10 @@ function handleEvendBindings( vm, element ) {
     const clickEventMethod = element.getAttribute( '@click' )
     if ( !clickEventMethod ) return
 
-    element.addEventListener( 'click', _ => {
-        eval( `vm.${ clickEventMethod }` )
+    element.addEventListener( 'click', event => {
+        const methodToCall = vm.$methods[ clickEventMethod ].bind( vm )
+        methodToCall( event )
+        
         element.removeAttribute( '@click' )
     })
 }
